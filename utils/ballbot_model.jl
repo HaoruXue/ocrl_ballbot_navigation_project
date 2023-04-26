@@ -52,30 +52,6 @@ function build_ballbot_arms_against_wall(left_end_coord::AbstractVector{T}, righ
     return ballbot  
 end
 
-function attach_contact_to_ballbot(model::Ballbot, left_end_coord::AbstractVector{T}, right_end_coord::AbstractVector{T}) where {T}
-    world = RigidBodyDynamics.findbody(model.mech, "world")
-    r_end_eff_body = RigidBodyDynamics.findbody(model.mech, "RArm4")
-    joint_r_wall = Joint("JRA8", RigidBodyDynamics.QuaternionSpherical{Float64}())
-    r_wall_tf = Transform3D(default_frame(world), frame_after(joint_r_wall), SVector(-right_end_coord[1], -right_end_coord[2], -right_end_coord[3]))
-    r_end_eff_tf = RigidBodyDynamics.frame_definitions(r_end_eff_body)[end]
-    r_end_tf = Transform3D(frame_before(joint_r_wall), r_end_eff_tf.to, r_end_eff_tf.mat)
-    attach!(model.mech, r_end_eff_body, world, joint_r_wall; joint_pose = r_end_tf, successor_pose = r_wall_tf)
-
-    l_end_eff_body = RigidBodyDynamics.findbody(model.mech, "LArm4")
-    joint_l_wall = Joint("JLA8", RigidBodyDynamics.QuaternionSpherical{Float64}())
-    l_wall_tf = Transform3D(default_frame(world), frame_after(joint_l_wall), SVector(-left_end_coord[1], -left_end_coord[2], -left_end_coord[3]))
-    l_end_eff_tf = RigidBodyDynamics.frame_definitions(l_end_eff_body)[end]
-    l_end_tf = Transform3D(frame_before(joint_l_wall), l_end_eff_tf.to, l_end_eff_tf.mat)
-    attach!(model.mech, l_end_eff_body, world, joint_l_wall; joint_pose = l_end_tf, successor_pose = l_wall_tf)
-end
-
-function detach_contact_to_ballbot(model::Ballbot)
-    r_joint = RigidBodyDynamics.findjoint(model.mech, "JRA8")
-    l_joint = RigidBodyDynamics.findjoint(model.mech, "LRA8")
-    RigidBodyDynamics.remove_joint!(model.mech, r_joint)
-    RigidBodyDynamics.remove_joint!(model.mech, l_joint)
-end
-
 struct Ballbot{C}
     mech::Mechanism{Float64}
     statecache::C
