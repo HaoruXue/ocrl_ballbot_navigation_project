@@ -18,12 +18,20 @@ function build_ballbot()
     return ballbot
 end
 
-function build_ballbot_arms()
+function build_reduced_ballbot_arms()
     # Define urdf file
     srcdir = "ballbot_arm_description"
     urdf_arms = joinpath(srcdir, "robots", "urdf", "ballbot_plus_fixedbase_two_link_arm.urdf")
     # ballbot = parse_urdf(urdf_arms)
     ballbot = parse_urdf(urdf_arms; remove_fixed_tree_joints=true)
+    return ballbot
+end
+
+function build_ballbot_arms()
+    # Define urdf file
+    srcdir = "ballbot_arm_description"
+    urdf_arms = joinpath(srcdir, "robots", "urdf", "ballbot_plus.urdf")
+    ballbot = parse_urdf(urdf_arms)
     return ballbot
 end
 
@@ -72,6 +80,10 @@ end
 
 function Ballbot_arms()
     Ballbot(build_ballbot_arms())
+end
+
+function Ballbot_arms_reduced()
+    Ballbot(build_reduced_ballbot_arms())
 end
 
 function Ballbot_wall(left_end_coord::AbstractVector{T}, right_end_coord::AbstractVector{T}) where {T}
